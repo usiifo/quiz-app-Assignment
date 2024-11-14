@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Question from './Question';
 import Result from './Result';
+import ProgressBar from './progressBar';
+import Timer from './timer';
 import './Quiz.css';
 
 const questions = [
@@ -61,9 +63,12 @@ const questions = [
 ];
 
 function Quiz() {
+    const [timeLeft, setTimeLeft] = useState(120);
     const [answers, setAnswers] = useState(Array(questions.length).fill(null));
     const [showResult, setShowResult] = useState(false);
     const [score, setScore] = useState(0);
+
+
 
     const handleAnswerOptionClick = (questionIndex, isCorrect) => {
         const newAnswers = [...answers];
@@ -77,12 +82,28 @@ function Quiz() {
         setShowResult(true);
     };
 
+    const handleTimeUp = () => {
+        handleSubmit();
+    };
+
+    let answeredQuestions = 0;
+
+    for (let i = 0; i < answers.length; i++) {
+        if (answers[i] !== null) {
+            answeredQuestions++;
+        }
+    }
+    const progress = (answeredQuestions / questions.length) * 100;
+
     return (
         <div className="quiz">
             {showResult ? (
                 <Result score={score} totalQuestions={questions.length} />
             ) : (
                 <div>
+                    <Timer startTime={120} onTimeUp={handleTimeUp} />
+                    <ProgressBar progress={progress} />
+
                     {questions.map((question, index) => (
                         <Question
                             key={index}
